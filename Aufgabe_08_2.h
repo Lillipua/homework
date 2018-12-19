@@ -3,44 +3,44 @@
 #include <cstdlib>
 
 template<typename T>
-class Schlange {
+class Queue {
 private:
-    struct Objekt {	// interner Datentyp
-        Objekt *tail;	// Zeiger auf Schlangenschwanz
+    struct Object {	// interner Datentyp
+        Object *tail;	// Zeiger auf Queuenschwanz
         T data;	// Datenfeld
     } *sz, *ez;
 
     void error(char *info);	// Fehlermeldung
 
 public:
-    Schlange();	// Konstruktor
-    Schlange(const Schlange<T>& s);
-    Schlange<T>& operator= (const Schlange<T>& s);
-    bool operator == (const Schlange<T>& s);
+    Queue();	// Konstruktor
+    Queue(const Queue<T>& s);
+    Queue<T>& operator= (const Queue<T>& s);
+    bool operator == (const Queue<T>& s);
     void enq(T& x);
     void deq();
     T front();
-    Objekt * frontObj();
+    Object * frontObj();
     void print();
-    bool empty();	// Schlange leer?
+    bool empty();	// Queue leer?
     void clear();	// loescht alle Eintraege
-    ~Schlange();	// Destruktor
+    ~Queue();	// Destruktor
 
     // Verlangte Methoden (siehe Dateiende)
     void manifold();
-    Objekt * insertAfter(Objekt *e, T const &d);
+    Object * insertAfter(Object *e, T const &d);
 };
 
 template<typename T>
-Schlange<T>::Schlange() {
+Queue<T>::Queue() {
     sz = nullptr;
 	ez = nullptr;
 }
 
 template<typename T>
-Schlange<T>::Schlange(const Schlange<T>& s){
+Queue<T>::Queue(const Queue<T>& s){
     ez = nullptr;
-    Objekt *ptr = s.sz;
+    Object *ptr = s.sz;
     while (ptr != nullptr) {
         enq(ptr->data);
         ptr = ptr->tail;
@@ -48,11 +48,11 @@ Schlange<T>::Schlange(const Schlange<T>& s){
 }
 
 template<typename T>
-Schlange<T>& Schlange<T>::operator= (const Schlange<T>& s) {
+Queue<T>& Queue<T>::operator= (const Queue<T>& s) {
     if (this == &s)
         return *this;
     clear();	// Speicher freigeben
-    Objekt *ptr = s.sz;
+    Object *ptr = s.sz;
     while (ptr != nullptr) {
         enq(ptr->data);
         ptr = ptr->tail;
@@ -61,16 +61,16 @@ Schlange<T>& Schlange<T>::operator= (const Schlange<T>& s) {
 }
 
 template<typename T>
-Schlange<T>::~Schlange() {
+Queue<T>::~Queue() {
     clear();
 }
 
 template<typename T>
-bool Schlange<T>::operator== (const Schlange& s) {
+bool Queue<T>::operator== (const Queue& s) {
     if (this == &s)
         return true;
-    Objekt *ptr1 = sz;	// this->sz
-    Objekt *ptr2 = s.sz;
+    Object *ptr1 = sz;	// this->sz
+    Object *ptr2 = s.sz;
     while (ptr1 != nullptr && ptr2 != nullptr) {
         if (ptr1->data != ptr2->data)
             return false;
@@ -81,39 +81,39 @@ bool Schlange<T>::operator== (const Schlange& s) {
 }
 
 template<typename T>
-T Schlange<T>::front() {
-    if (empty())
-        error("leer");
+T Queue<T>::front() {
+    /*if (empty())
+        error("leer");*/
     return sz->data;
 }
 
 template<typename T>
-typename Schlange<T>::Objekt * Schlange<T>::frontObj() {
-    if (empty())
-        error("leer");
+typename Queue<T>::Object * Queue<T>::frontObj() {
+    //if (empty())
+    //    //error("leer");
     return sz;
 }
 
 template<typename T>
-bool Schlange<T>::empty() {
+bool Queue<T>::empty() {
     return (ez == nullptr);
 }
 
 template<typename T>
-void Schlange<T>::clear() {
+void Queue<T>::clear() {
     while (!empty())
         deq();
 }
 
 template<typename T>
-void Schlange<T>::error(char *info) {
+void Queue<T>::error(char *info) {
     std::cerr << info << std::endl;
     exit(1);
 }
 
 template<typename T>
-void Schlange<T>::enq(T& x) {
-    Objekt *obj = new Objekt;	// neues Objekt anlegen
+void Queue<T>::enq(T& x) {
+    Object *obj = new Object;	// neues Object anlegen
     obj->data = x;	// Nutzdaten speichern
     obj->tail = nullptr;
     if (empty())
@@ -124,22 +124,22 @@ void Schlange<T>::enq(T& x) {
 }
 
 template<typename T>
-void Schlange<T>::deq() {
-    if (empty())
-        error("leer");
-    Objekt *obj = sz;	// Zeiger auf Kopf retten
+void Queue<T>::deq() {
+	if (empty())
+		exit(1);
+    Object *obj = sz;	// Zeiger auf Kopf retten
     sz = sz->tail;	// Start auf 2. Element
     if (sz == nullptr)
-        ez = nullptr;	// Schlange leer!
+        ez = nullptr;	// Queue leer!
     delete obj;	// ehemaliges 1. Element loeschen
 }
 
 template<typename T>
-void Schlange<T>::print() {
+void Queue<T>::print() {
     if(empty()){
         return;
     }
-    Objekt * obj = sz;
+    Object * obj = sz;
 	while(obj != nullptr){
 		if(obj != sz) std::cout << ", ";
         std::cout << obj->data;
@@ -148,17 +148,38 @@ void Schlange<T>::print() {
     std::cout << std::endl;
 }
 
-// Verlangte Methode: insertAfter(Objekt *e)
-// Hilfsschlange und umkopieren nicht erlaubt
+// Verlangte Methode: insertAfter(Object *e)
+// HilfsQueue und umkopieren nicht erlaubt
 template<typename T>
-typename Schlange<T>::Objekt* 
-Schlange<T>::insertAfter(Objekt *e, T const &d) {
+typename Queue<T>::Object* 
+Queue<T>::insertAfter(Object *e, T const &d) {
 
+	Object *toInsert = new Object;
+
+	toInsert->data = d;
+	toInsert->tail = e->tail;
+
+	e->tail = toInsert;
+
+	return toInsert;
 }
 
 // Verlangte Methode: manifold()
 template<typename T>
-void Schlange<T>::manifold() {
+void Queue<T>::manifold() {
+	if (empty()) {
+		return;
+	}
+	Object * obj = sz;
+	while (obj != nullptr) {
+		Object *toInsert = new Object;
 
+		toInsert->data = obj->data;
+		toInsert->tail = obj->tail;
+
+		obj->tail = toInsert;
+
+		obj = toInsert->tail;
+	}
 }
 /********* Ende *********/
